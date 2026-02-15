@@ -10,25 +10,34 @@ const UploadPage = () => {
   const [generatedLink, setGeneratedLink] = useState('');
   const [loading, setLoading] = useState(false);
   const [copied, setCopied] = useState(false);
+  const [password, setPassword] = useState('');
+  const [maxViews, setMaxViews] = useState('');
+  const [maxDownloads, setMaxDownloads] = useState('');
 
   const handleUpload = async () => {
     setLoading(true);
     const formData = new FormData();
     formData.append('type', mode);
     formData.append('expiryMinutes', expiry);
+    if (password.trim()) formData.append('password', password.trim());
+    if (maxViews) formData.append('maxViews', maxViews);
+    if (maxDownloads) formData.append('maxDownloads', maxDownloads);
     if (mode === 'text') formData.append('text', text);
     else {
-       if (!file) return alert('Select file');
+       if (!file) {
+         setLoading(false);
+         return alert('Select file');
+       }
        formData.append('file', file);
     }
 
     try {
-// const res = await axios.post('http://localhost:5001/api/upload', formData, {
-//   headers: { 'Content-Type': 'multipart/form-data' }
-// });
-      const res = await axios.post('http://localhost:5001/api/upload', formData);
+      const res = await axios.post('/api/upload', formData, { timeout: 8000 });
       setGeneratedLink(res.data.link);
-    } catch (err) { alert('Upload failed'); } 
+    } catch (err) {
+      const serverMessage = err?.response?.data?.details || err?.response?.data?.error;
+      alert(serverMessage || err?.message || 'Upload failed');
+    } 
     finally { setLoading(false); }
   };
 
@@ -62,6 +71,31 @@ const UploadPage = () => {
               <option value="1">1 Min</option><option value="10">10 Mins</option><option value="60">1 Hour</option><option value="1440">24 Hours</option>
             </select>
           </div>
+          <div className="mb-6 grid grid-cols-1 sm:grid-cols-3 gap-4">
+            <input
+              type="password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="bg-gray-900 border border-gray-600 rounded px-3 py-2 text-white"
+              placeholder="Password (optional)"
+            />
+            <input
+              type="number"
+              min="1"
+              value={maxViews}
+              onChange={(e) => setMaxViews(e.target.value)}
+              className="bg-gray-900 border border-gray-600 rounded px-3 py-2 text-white"
+              placeholder="Max views (optional)"
+            />
+            <input
+              type="number"
+              min="1"
+              value={maxDownloads}
+              onChange={(e) => setMaxDownloads(e.target.value)}
+              className="bg-gray-900 border border-gray-600 rounded px-3 py-2 text-white"
+              placeholder="Max downloads (optional)"
+            />
+          </div>
           <button onClick={handleUpload} disabled={loading} className="w-full bg-green-600 py-3 rounded font-bold">{loading ? '...' : 'Generate Link'}</button>
         </>
       ) : (
@@ -71,7 +105,19 @@ const UploadPage = () => {
             <span className="truncate text-gray-300">{generatedLink}</span>
             <button onClick={copyLink} className="ml-4 text-blue-400">{copied ? <Check /> : <Copy />}</button>
           </div>
-          <button onClick={() => {setGeneratedLink(''); setFile(null); setText('')}} className="text-gray-400 underline">New Upload</button>
+          <button
+            onClick={() => {
+              setGeneratedLink('');
+              setFile(null);
+              setText('');
+              setPassword('');
+              setMaxViews('');
+              setMaxDownloads('');
+            }}
+            className="text-gray-400 underline"
+          >
+            New Upload
+          </button>
         </div>
       )}
     </div>
