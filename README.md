@@ -123,4 +123,4 @@ Base URL: `http://127.0.0.1:5001`
 
 ## Data flow diagram from the user upload to DB storage
 
-![High-Level Architecture and Data Flow](docs/high-level-architecture.png)
+Docs Folder > high-level-architecture.png
