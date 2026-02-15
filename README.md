@@ -101,7 +101,7 @@ Base URL: `http://127.0.0.1:5001`
 
 - Express + PostgreSQL keeps backend implementation simple and explicit.
 - `multer` disk storage is used for files to avoid external object storage dependencies.
-- Link metadata is in PostgreSQL, Metadata is stored in `backend/uploads`
+- Link metadata is in PostgreSQL, while uploaded files are stored in `backend/uploads`.
 - Link passwords are salted and hashed using `crypto.scrypt`.
 - View/download limits are enforced server-side with DB counters.
 - Expiry is enforced in two places:
@@ -123,4 +123,4 @@ Base URL: `http://127.0.0.1:5001`
 
 ## Data flow diagram from the user upload to DB storage
 
-![High-Level Architecture and Data Flow](docs/diagram.png)
+![High-Level Architecture and Data Flow](docs/high-level-architecture.png)

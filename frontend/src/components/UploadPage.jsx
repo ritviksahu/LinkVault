@@ -98,7 +98,8 @@ const UploadPage = () => {
         headers: { Authorization: `Bearer ${authToken}` },
         timeout: 8000
       });
-    } catch {
+    } catch (err) {
+      void err;
     }
     localStorage.removeItem('authToken');
     localStorage.removeItem('authEmail');
